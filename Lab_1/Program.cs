@@ -6,14 +6,18 @@ CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+builder.Services.AddControllers();
+builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<TravelAgencyContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("TravelAgency")));
 
 var app = builder.Build();
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
+app.UseSwagger();
+app.UseSwaggerUI();
+
+app.MapRazorPages();
+app.MapControllers();
 
 app.Run();

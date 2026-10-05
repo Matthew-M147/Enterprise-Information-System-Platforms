@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 [Table("clients")]
@@ -40,9 +41,12 @@ public class Client
     [MaxLength(10)]
     public string? Apartment { get; set; }
 
-    [ValidateNever]
+    [ValidateNever, JsonIgnore]
     public List<Order> Orders { get; set; } = new();
 
+    [JsonIgnore]
     public string FullName => $"{LastName} {FirstName} {MiddleName}";
+
+    [JsonIgnore]
     public string Address => $"{City}, {Street}, {Building}" + (Apartment != null ? $", кв. {Apartment}" : "");
 }

@@ -9,11 +9,12 @@
 <body>
     <nav class="navbar navbar-expand navbar-dark bg-primary mb-4">
         <div class="container">
-            <a class="navbar-brand" asp-controller="Home" asp-action="Index">Туристична фірма</a>
+            <a class="navbar-brand" asp-page="/Index">Туристична фірма</a>
             <div class="navbar-nav">
-                <a class="nav-link" asp-controller="Clients" asp-action="Index">Клієнти</a>
-                <a class="nav-link" asp-controller="Tours" asp-action="Index">Тури</a>
-                <a class="nav-link" asp-controller="Orders" asp-action="Index">Замовлення</a>
+                <a class="nav-link" asp-page="/Clients/Index">Клієнти</a>
+                <a class="nav-link" asp-page="/Tours/Index">Тури</a>
+                <a class="nav-link" asp-page="/Orders/Index">Замовлення</a>
+                <a class="nav-link" href="/swagger">API</a>
             </div>
         </div>
     </nav>

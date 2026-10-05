@@ -1,0 +1,28 @@
+@page "{id:int}"
+@model DeleteModel
+@{
+    ViewData["Title"] = "Видалення клієнта";
+}
+
+<h1 class="mb-3">Видалити клієнта?</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">ПІБ</dt>
+    <dd class="col-sm-10">@Model.Client.FullName</dd>
+    <dt class="col-sm-2">Телефон</dt>
+    <dd class="col-sm-10">@Model.Client.Phone</dd>
+    <dt class="col-sm-2">Адреса</dt>
+    <dd class="col-sm-10">@Model.Client.Address</dd>
+</dl>
+
+@if (Model.Client.Orders.Count > 0)
+{
+    <div class="alert alert-warning">
+        Разом із клієнтом буде видалено його замовлення: <strong>@Model.Client.Orders.Count</strong>.
+    </div>
+}
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Видалити</button>
+    <a class="btn btn-secondary" asp-page="Index">Скасувати</a>
+</form>

@@ -1,0 +1,25 @@
+@page "{id:int}"
+@model DeleteModel
+@{
+    ViewData["Title"] = "Видалення замовлення";
+}
+
+<h1 class="mb-3">Видалити замовлення №@Model.Order.Id?</h1>
+
+<dl class="row">
+    <dt class="col-sm-2">Клієнт</dt>
+    <dd class="col-sm-10">@Model.Order.Client.FullName</dd>
+    <dt class="col-sm-2">Тур</dt>
+    <dd class="col-sm-10">@Model.Order.Tour.Name</dd>
+    <dt class="col-sm-2">Дата поїздки</dt>
+    <dd class="col-sm-10">@Model.Order.TripDate.ToString("dd.MM.yyyy")</dd>
+    <dt class="col-sm-2">Кількість</dt>
+    <dd class="col-sm-10">@Model.Order.Quantity</dd>
+    <dt class="col-sm-2">Сума</dt>
+    <dd class="col-sm-10">@Model.Order.Total.ToString("N2") грн</dd>
+</dl>
+
+<form method="post">
+    <button type="submit" class="btn btn-danger">Видалити</button>
+    <a class="btn btn-secondary" asp-page="Index">Скасувати</a>
+</form>

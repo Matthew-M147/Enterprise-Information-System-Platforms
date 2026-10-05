@@ -1,14 +1,15 @@
-@model Client
+@page
+@model CreateModel
 @{
     ViewData["Title"] = "Новий клієнт";
 }
 
 <h1 class="mb-3">Новий клієнт</h1>
 
-<form asp-action="Create" method="post">
-    <partial name="_Form" model="Model" />
+<form method="post">
+    <partial name="_Form" for="Client" />
     <div class="mt-4">
         <button type="submit" class="btn btn-success">Зберегти</button>
-        <a class="btn btn-secondary" asp-action="Index">Скасувати</a>
+        <a class="btn btn-secondary" asp-page="Index">Скасувати</a>
     </div>
 </form>

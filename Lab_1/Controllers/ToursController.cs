@@ -1,8 +1,14 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-public class ToursController : Controller
+[ApiController]
+[Route("api/tours")]
+public class ToursController : ControllerBase
 {
+    private static readonly Expression<Func<Tour, TourDto>> AsDto = t => new TourDto(
+        t.Id, t.Name, t.Description, t.Price, t.DurationDays, t.Orders.Count);
+
     private readonly TravelAgencyContext _db;
 
     public ToursController(TravelAgencyContext db)
@@ -10,58 +16,51 @@ public class ToursController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index()
+    [HttpGet]
+    public async Task<List<TourDto>> GetAll()
     {
-        var tours = await _db.Tours
-            .Include(t => t.Orders)
-            .OrderBy(t => t.Id)
-            .AsNoTracking()
-            .ToListAsync();
-        return View(tours);
+        return await _db.Tours.OrderBy(t => t.Id).Select(AsDto).ToListAsync();
     }
 
-    public IActionResult Create()
+    [HttpGet("{id}")]
+    public async Task<ActionResult<TourDto>> Get(int id)
     {
-        return View(new Tour { DurationDays = 1 });
+        var tour = await FindDtoAsync(id);
+        if (tour == null)
+            return NotFound();
+        return tour;
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Tour tour)
+    public async Task<ActionResult<TourDto>> Create(Tour tour)
     {
+        tour.Id = 0;
         await CheckNameIsUniqueAsync(tour);
         if (!ModelState.IsValid)
-            return View(tour);
+            return ValidationProblem(ModelState);
 
         _db.Tours.Add(tour);
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return CreatedAtAction(nameof(Get), new { id = tour.Id }, await FindDtoAsync(tour.Id));
     }
 
-    public async Task<IActionResult> Edit(int id)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, Tour tour)
     {
-        var tour = await _db.Tours.FindAsync(id);
-        if (tour == null)
-            return NotFound();
-        return View(tour);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Tour tour)
-    {
-        if (id != tour.Id)
+        if (!await _db.Tours.AnyAsync(t => t.Id == id))
             return NotFound();
 
+        tour.Id = id;
         await CheckNameIsUniqueAsync(tour);
         if (!ModelState.IsValid)
-            return View(tour);
+            return ValidationProblem(ModelState);
 
         _db.Tours.Update(tour);
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return NoContent();
     }
 
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var tour = await _db.Tours
@@ -69,22 +68,15 @@ public class ToursController : Controller
             .FirstOrDefaultAsync(t => t.Id == id);
         if (tour == null)
             return NotFound();
-        return View(tour);
+
+        _db.Tours.Remove(tour);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    private Task<TourDto?> FindDtoAsync(int id)
     {
-        var tour = await _db.Tours
-            .Include(t => t.Orders)
-            .FirstOrDefaultAsync(t => t.Id == id);
-        if (tour != null)
-        {
-            _db.Tours.Remove(tour);
-            await _db.SaveChangesAsync();
-        }
-        return RedirectToAction(nameof(Index));
+        return _db.Tours.Where(t => t.Id == id).Select(AsDto).FirstOrDefaultAsync();
     }
 
     private async Task CheckNameIsUniqueAsync(Tour tour)

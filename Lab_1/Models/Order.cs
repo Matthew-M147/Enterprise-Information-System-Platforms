@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 [Table("orders")]
@@ -30,12 +31,12 @@ public class Order
     [Range(0, 100, ErrorMessage = "Від 0 до 100")]
     public decimal DiscountPercent { get; set; }
 
-    [ValidateNever]
+    [ValidateNever, JsonIgnore]
     public Client Client { get; set; } = null!;
 
-    [ValidateNever]
+    [ValidateNever, JsonIgnore]
     public Tour Tour { get; set; } = null!;
 
-    [ValidateNever]
+    [ValidateNever, JsonIgnore]
     public decimal Total => Math.Round(Tour.Price * Quantity * (1 - DiscountPercent / 100), 2);
 }

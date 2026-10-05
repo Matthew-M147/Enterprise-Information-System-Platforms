@@ -1,0 +1,43 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Головна";
+}
+
+<h1 class="mb-3">Туристична фірма</h1>
+<p class="text-muted mb-4">Облік клієнтів, турів і замовлень (ASP.NET Core Razor Pages + Web API + Entity Framework Core + PostgreSQL).</p>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Клієнти</h5>
+                <p class="display-6">@Model.ClientsCount</p>
+                <a class="btn btn-primary" asp-page="/Clients/Index">Перейти</a>
+                <a class="btn btn-outline-secondary" href="/api/clients">JSON</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Тури</h5>
+                <p class="display-6">@Model.ToursCount</p>
+                <a class="btn btn-primary" asp-page="/Tours/Index">Перейти</a>
+                <a class="btn btn-outline-secondary" href="/api/tours">JSON</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Замовлення</h5>
+                <p class="display-6">@Model.OrdersCount</p>
+                <a class="btn btn-primary" asp-page="/Orders/Index">Перейти</a>
+                <a class="btn btn-outline-secondary" href="/api/orders">JSON</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<p class="mt-4">Усі API-запити можна перевірити на сторінці <a href="/swagger">Swagger</a>.</p>

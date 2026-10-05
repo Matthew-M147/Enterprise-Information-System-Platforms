@@ -1,14 +1,15 @@
-@model Tour
+@page "{id:int}"
+@model EditModel
 @{
     ViewData["Title"] = "Редагування туру";
 }
 
 <h1 class="mb-3">Редагування туру</h1>
 
-<form asp-action="Edit" asp-route-id="@Model.Id" method="post">
-    <partial name="_Form" model="Model" />
+<form method="post">
+    <partial name="_Form" for="Tour" />
     <div class="mt-4">
         <button type="submit" class="btn btn-primary">Зберегти</button>
-        <a class="btn btn-secondary" asp-action="Index">Скасувати</a>
+        <a class="btn btn-secondary" asp-page="Index">Скасувати</a>
     </div>
 </form>

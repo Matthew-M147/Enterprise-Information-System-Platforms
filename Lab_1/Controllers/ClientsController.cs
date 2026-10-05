@@ -1,8 +1,15 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-public class ClientsController : Controller
+[ApiController]
+[Route("api/clients")]
+public class ClientsController : ControllerBase
 {
+    private static readonly Expression<Func<Client, ClientDto>> AsDto = c => new ClientDto(
+        c.Id, c.LastName, c.FirstName, c.MiddleName, c.Phone,
+        c.City, c.Street, c.Building, c.Apartment, c.Orders.Count);
+
     private readonly TravelAgencyContext _db;
 
     public ClientsController(TravelAgencyContext db)
@@ -10,58 +17,51 @@ public class ClientsController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index()
+    [HttpGet]
+    public async Task<List<ClientDto>> GetAll()
     {
-        var clients = await _db.Clients
-            .Include(c => c.Orders)
-            .OrderBy(c => c.Id)
-            .AsNoTracking()
-            .ToListAsync();
-        return View(clients);
+        return await _db.Clients.OrderBy(c => c.Id).Select(AsDto).ToListAsync();
     }
 
-    public IActionResult Create()
+    [HttpGet("{id}")]
+    public async Task<ActionResult<ClientDto>> Get(int id)
     {
-        return View(new Client());
+        var client = await FindDtoAsync(id);
+        if (client == null)
+            return NotFound();
+        return client;
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Client client)
+    public async Task<ActionResult<ClientDto>> Create(Client client)
     {
+        client.Id = 0;
         await CheckPhoneIsUniqueAsync(client);
         if (!ModelState.IsValid)
-            return View(client);
+            return ValidationProblem(ModelState);
 
         _db.Clients.Add(client);
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return CreatedAtAction(nameof(Get), new { id = client.Id }, await FindDtoAsync(client.Id));
     }
 
-    public async Task<IActionResult> Edit(int id)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, Client client)
     {
-        var client = await _db.Clients.FindAsync(id);
-        if (client == null)
-            return NotFound();
-        return View(client);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Client client)
-    {
-        if (id != client.Id)
+        if (!await _db.Clients.AnyAsync(c => c.Id == id))
             return NotFound();
 
+        client.Id = id;
         await CheckPhoneIsUniqueAsync(client);
         if (!ModelState.IsValid)
-            return View(client);
+            return ValidationProblem(ModelState);
 
         _db.Clients.Update(client);
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return NoContent();
     }
 
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
         var client = await _db.Clients
@@ -69,22 +69,15 @@ public class ClientsController : Controller
             .FirstOrDefaultAsync(c => c.Id == id);
         if (client == null)
             return NotFound();
-        return View(client);
+
+        _db.Clients.Remove(client);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    private Task<ClientDto?> FindDtoAsync(int id)
     {
-        var client = await _db.Clients
-            .Include(c => c.Orders)
-            .FirstOrDefaultAsync(c => c.Id == id);
-        if (client != null)
-        {
-            _db.Clients.Remove(client);
-            await _db.SaveChangesAsync();
-        }
-        return RedirectToAction(nameof(Index));
+        return _db.Clients.Where(c => c.Id == id).Select(AsDto).FirstOrDefaultAsync();
     }
 
     private async Task CheckPhoneIsUniqueAsync(Client client)

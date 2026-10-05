@@ -1,4 +1,3 @@
-@using Microsoft.AspNetCore.Mvc.Rendering
 @model Order
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -7,14 +6,14 @@
 <div class="row g-3">
     <div class="col-md-6">
         <label asp-for="ClientId" class="form-label"></label>
-        <select asp-for="ClientId" asp-items="(SelectList)ViewBag.Clients" class="form-select">
+        <select asp-for="ClientId" asp-items='(SelectList)ViewData["Clients"]!' class="form-select">
             <option value="0">— оберіть клієнта —</option>
         </select>
         <span asp-validation-for="ClientId" class="text-danger"></span>
     </div>
     <div class="col-md-6">
         <label asp-for="TourId" class="form-label"></label>
-        <select asp-for="TourId" asp-items="(SelectList)ViewBag.Tours" class="form-select">
+        <select asp-for="TourId" asp-items='(SelectList)ViewData["Tours"]!' class="form-select">
             <option value="0">— оберіть тур —</option>
         </select>
         <span asp-validation-for="TourId" class="text-danger"></span>

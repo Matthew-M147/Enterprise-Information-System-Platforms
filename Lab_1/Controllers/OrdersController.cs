@@ -1,9 +1,25 @@
+using System.Linq.Expressions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-public class OrdersController : Controller
+[ApiController]
+[Route("api/orders")]
+public class OrdersController : ControllerBase
 {
+    private static readonly Expression<Func<Order, OrderDto>> AsDto = o => new OrderDto(
+        o.Id,
+        o.ClientId,
+        o.Client.LastName + " " + o.Client.FirstName,
+        o.TourId,
+        o.Tour.Name,
+        o.OrderDate,
+        o.TripDate,
+        o.Tour.DurationDays,
+        o.Quantity,
+        o.Tour.Price,
+        o.DiscountPercent,
+        Math.Round(o.Tour.Price * o.Quantity * (1 - o.DiscountPercent / 100), 2));
+
     private readonly TravelAgencyContext _db;
 
     public OrdersController(TravelAgencyContext db)
@@ -11,104 +27,77 @@ public class OrdersController : Controller
         _db = db;
     }
 
-    public async Task<IActionResult> Index()
+    [HttpGet]
+    public async Task<List<OrderDto>> GetAll()
     {
-        var orders = await _db.Orders
-            .Include(o => o.Client)
-            .Include(o => o.Tour)
+        return await _db.Orders
             .OrderBy(o => o.ClientId)
             .ThenBy(o => o.TripDate)
-            .AsNoTracking()
+            .Select(AsDto)
             .ToListAsync();
-        return View(orders);
     }
 
-    public async Task<IActionResult> Create()
+    [HttpGet("{id}")]
+    public async Task<ActionResult<OrderDto>> Get(int id)
     {
-        var today = DateOnly.FromDateTime(DateTime.Today);
-        await LoadSelectListsAsync();
-        return View(new Order { OrderDate = today, TripDate = today, Quantity = 1 });
+        var order = await FindDtoAsync(id);
+        if (order == null)
+            return NotFound();
+        return order;
     }
 
     [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(Order order)
+    public async Task<ActionResult<OrderDto>> Create(Order order)
     {
-        CheckDates(order);
+        order.Id = 0;
+        await ValidateAsync(order);
         if (!ModelState.IsValid)
-        {
-            await LoadSelectListsAsync();
-            return View(order);
-        }
+            return ValidationProblem(ModelState);
 
         _db.Orders.Add(order);
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return CreatedAtAction(nameof(Get), new { id = order.Id }, await FindDtoAsync(order.Id));
     }
 
-    public async Task<IActionResult> Edit(int id)
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, Order order)
     {
-        var order = await _db.Orders.FindAsync(id);
-        if (order == null)
+        if (!await _db.Orders.AnyAsync(o => o.Id == id))
             return NotFound();
 
-        await LoadSelectListsAsync();
-        return View(order);
-    }
-
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(int id, Order order)
-    {
-        if (id != order.Id)
-            return NotFound();
-
-        CheckDates(order);
+        order.Id = id;
+        await ValidateAsync(order);
         if (!ModelState.IsValid)
-        {
-            await LoadSelectListsAsync();
-            return View(order);
-        }
+            return ValidationProblem(ModelState);
 
         _db.Orders.Update(order);
         await _db.SaveChangesAsync();
-        return RedirectToAction(nameof(Index));
+        return NoContent();
     }
 
+    [HttpDelete("{id}")]
     public async Task<IActionResult> Delete(int id)
     {
-        var order = await _db.Orders
-            .Include(o => o.Client)
-            .Include(o => o.Tour)
-            .FirstOrDefaultAsync(o => o.Id == id);
+        var order = await _db.Orders.FindAsync(id);
         if (order == null)
             return NotFound();
-        return View(order);
+
+        _db.Orders.Remove(order);
+        await _db.SaveChangesAsync();
+        return NoContent();
     }
 
-    [HttpPost, ActionName("Delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> DeleteConfirmed(int id)
+    private Task<OrderDto?> FindDtoAsync(int id)
     {
-        var order = await _db.Orders.FindAsync(id);
-        if (order != null)
-        {
-            _db.Orders.Remove(order);
-            await _db.SaveChangesAsync();
-        }
-        return RedirectToAction(nameof(Index));
+        return _db.Orders.Where(o => o.Id == id).Select(AsDto).FirstOrDefaultAsync();
     }
 
-    private async Task LoadSelectListsAsync()
+    private async Task ValidateAsync(Order order)
     {
-        var clients = await _db.Clients.OrderBy(c => c.LastName).AsNoTracking().ToListAsync();
-        var tours = await _db.Tours.OrderBy(t => t.Name).AsNoTracking().ToListAsync();
-        ViewBag.Clients = new SelectList(clients, nameof(Client.Id), nameof(Client.FullName));
-        ViewBag.Tours = new SelectList(tours, nameof(Tour.Id), nameof(Tour.Name));
-    }
-
-    private void CheckDates(Order order)
-    {
+        if (!await _db.Clients.AnyAsync(c => c.Id == order.ClientId))
+            ModelState.AddModelError(nameof(Order.ClientId), "Клієнта не знайдено");
+        if (!await _db.Tours.AnyAsync(t => t.Id == order.TourId))
+            ModelState.AddModelError(nameof(Order.TourId), "Тур не знайдено");
         if (order.TripDate < order.OrderDate)
             ModelState.AddModelError(nameof(Order.TripDate), "Дата поїздки не може бути раніше дати замовлення");
     }
