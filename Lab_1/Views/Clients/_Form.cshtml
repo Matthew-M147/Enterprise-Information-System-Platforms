@@ -1,0 +1,47 @@
+@model Client
+
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<input type="hidden" asp-for="Id" />
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <label asp-for="LastName" class="form-label"></label>
+        <input asp-for="LastName" class="form-control" />
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="FirstName" class="form-label"></label>
+        <input asp-for="FirstName" class="form-control" />
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="MiddleName" class="form-label"></label>
+        <input asp-for="MiddleName" class="form-control" />
+        <span asp-validation-for="MiddleName" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Phone" class="form-label"></label>
+        <input asp-for="Phone" class="form-control" placeholder="+380..." />
+        <span asp-validation-for="Phone" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="City" class="form-label"></label>
+        <input asp-for="City" class="form-control" />
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+    <div class="col-md-4">
+        <label asp-for="Street" class="form-label"></label>
+        <input asp-for="Street" class="form-control" />
+        <span asp-validation-for="Street" class="text-danger"></span>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Building" class="form-label"></label>
+        <input asp-for="Building" class="form-control" />
+        <span asp-validation-for="Building" class="text-danger"></span>
+    </div>
+    <div class="col-md-2">
+        <label asp-for="Apartment" class="form-label"></label>
+        <input asp-for="Apartment" class="form-control" />
+        <span asp-validation-for="Apartment" class="text-danger"></span>
+    </div>
+</div>
