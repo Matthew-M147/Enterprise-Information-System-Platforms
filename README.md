@@ -7,8 +7,9 @@
 - **lab3** — ASP.NET Core MVC (на основі lab2)
 - **lab4** — ASP.NET Core Razor Pages + Web API (на основі lab3)
 - **lab5** — Blazor (на основі lab4)
+- **lab6** — gRPC-сервіс + консольний клієнт (на основі lab5)
 
-**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API, Blazor), Swagger.
+**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API, Blazor, gRPC), Swagger.
 
 ## Лабораторна 2
 
@@ -56,6 +57,18 @@ Razor Pages і Web API з четвертої лаби тут не викорис
 - зробив видалення з підтвердженням прямо в рядку таблиці;
 - для роботи з базою використав `IDbContextFactory` — окремий контекст на кожну операцію, як рекомендує Microsoft для Blazor.
 
+## Лабораторна 6
+
+У цій лабі я зробив той самий CRUD через спеціалізований веб-сервіс — gRPC.
+Сервер не має графічного інтерфейсу: з ним працює окрема консольна програма-клієнт.
+Blazor з п'ятої лаби тут не використовується (він залишився в гілці `lab5`).
+
+Що я зробив:
+- описав контракт сервісу у файлі `Lab_1/Protos/travel_agency.proto`: повідомлення (`ClientMessage`, `TourMessage`, `OrderMessage`) і сервіси `ClientService`, `TourService`, `OrderService` з методами `GetAll`, `Get`, `Create`, `Update`, `Delete`;
+- реалізував сервіси на сервері (папка `Lab_1/Services`): вони працюють з базою через EF Core, а помилки повертають статусами gRPC (`NotFound`, `InvalidArgument`);
+- увімкнув HTTP/2, бо gRPC працює тільки через нього;
+- створив консольний клієнт `GrpcClient` з меню, який через gRPC показує, додає, редагує та видаляє клієнтів, тури й замовлення; код для викликів генерується з того самого `.proto`.
+
 ## Запуск
 
 Потрібен PostgreSQL (користувач `postgres` / пароль `admin`) і база `travel_agency`,
@@ -68,3 +81,8 @@ dotnet run --project Lab_1
 - lab1, lab2 — результат виводиться в консоль;
 - lab3, lab5 — відкривається сайт http://localhost:5080
 - lab4 — сайт http://localhost:5080 та API http://localhost:5080/swagger
+- lab6 — запускається gRPC-сервер на http://localhost:5080; після цього в іншому терміналі запустіть клієнт:
+
+```bash
+dotnet run --project GrpcClient
+```
