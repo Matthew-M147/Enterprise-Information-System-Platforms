@@ -6,8 +6,9 @@
 - **lab2** — Entity Framework Core (на основі lab1)
 - **lab3** — ASP.NET Core MVC (на основі lab2)
 - **lab4** — ASP.NET Core Razor Pages + Web API (на основі lab3)
+- **lab5** — Blazor (на основі lab4)
 
-**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API), Swagger.
+**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API, Blazor), Swagger.
 
 ## Лабораторна 2
 
@@ -43,6 +44,18 @@
 - зробив DTO (папка `Dtos`), щоб API повертав зручні дані — наприклад, замовлення одразу з ім'ям клієнта, назвою туру та сумою;
 - підключив Swagger для перевірки API в браузері.
 
+## Лабораторна 5
+
+У цій лабі я переписав інтерфейс на Blazor — це альтернативний спосіб зробити той самий CRUD.
+Razor Pages і Web API з четвертої лаби тут не використовуються (вони залишились у гілці `lab4`).
+
+Що я зробив:
+- створив Blazor-компоненти (папка `Components`): кожен `.razor` файл містить і розмітку, і C#-код у блоці `@code`;
+- для кожної сутності зробив список (`ClientList`, `TourList`, `OrderList`) і одну форму для створення та редагування (`ClientForm`, `TourForm`, `OrderForm`);
+- використав режим Interactive Server: кнопки й форми обробляються на C# без перезавантаження сторінки;
+- зробив видалення з підтвердженням прямо в рядку таблиці;
+- для роботи з базою використав `IDbContextFactory` — окремий контекст на кожну операцію, як рекомендує Microsoft для Blazor.
+
 ## Запуск
 
 Потрібен PostgreSQL (користувач `postgres` / пароль `admin`) і база `travel_agency`,
@@ -53,5 +66,5 @@ dotnet run --project Lab_1
 ```
 
 - lab1, lab2 — результат виводиться в консоль;
-- lab3 — відкривається сайт http://localhost:5080
+- lab3, lab5 — відкривається сайт http://localhost:5080
 - lab4 — сайт http://localhost:5080 та API http://localhost:5080/swagger
