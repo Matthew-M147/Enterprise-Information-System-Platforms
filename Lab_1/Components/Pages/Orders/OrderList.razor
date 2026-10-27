@@ -1,0 +1,98 @@
+@page "/orders"
+@inject IDbContextFactory<TravelAgencyContext> DbFactory
+
+<PageTitle>Замовлення — Туристична фірма</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Замовлення</h1>
+    <a class="btn btn-success" href="orders/create">Додати замовлення</a>
+</div>
+
+@if (orders == null)
+{
+    <p>Завантаження...</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>№</th>
+                <th>Клієнт</th>
+                <th>Тур</th>
+                <th>Дата поїздки</th>
+                <th>Днів</th>
+                <th>К-сть</th>
+                <th>Ціна</th>
+                <th>Знижка</th>
+                <th>Сума</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>
+                    <td>@order.Id</td>
+                    <td>@order.Client.LastName @order.Client.FirstName</td>
+                    <td>@order.Tour.Name</td>
+                    <td>@order.TripDate.ToString("dd.MM.yyyy")</td>
+                    <td>@order.Tour.DurationDays</td>
+                    <td>@order.Quantity</td>
+                    <td class="text-nowrap">@order.Tour.Price.ToString("N2")</td>
+                    <td>@order.DiscountPercent.ToString("0.##")%</td>
+                    <td class="text-nowrap fw-semibold">@order.Total.ToString("N2")</td>
+                    <td class="text-end text-nowrap">
+                        @if (deletingId == order.Id)
+                        {
+                            <span class="me-2">Видалити?</span>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteAsync(order.Id)">Так</button>
+                            <button class="btn btn-sm btn-secondary" @onclick="() => deletingId = null">Ні</button>
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm btn-outline-primary" href="orders/edit/@order.Id">Редагувати</a>
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => deletingId = order.Id">Видалити</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Order>? orders;
+    private int? deletingId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        orders = await db.Orders
+            .Include(o => o.Client)
+            .Include(o => o.Tour)
+            .OrderBy(o => o.ClientId)
+            .ThenBy(o => o.TripDate)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var order = await db.Orders.FindAsync(id);
+        if (order != null)
+        {
+            db.Orders.Remove(order);
+            await db.SaveChangesAsync();
+        }
+
+        deletingId = null;
+        await LoadAsync();
+    }
+}

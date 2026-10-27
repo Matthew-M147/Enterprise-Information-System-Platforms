@@ -1,0 +1,94 @@
+@page "/tours"
+@inject IDbContextFactory<TravelAgencyContext> DbFactory
+
+<PageTitle>Тури — Туристична фірма</PageTitle>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Тури</h1>
+    <a class="btn btn-success" href="tours/create">Додати тур</a>
+</div>
+
+@if (tours == null)
+{
+    <p>Завантаження...</p>
+}
+else
+{
+    <table class="table table-striped align-middle">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Назва</th>
+                <th>Ціна, грн</th>
+                <th>Днів</th>
+                <th>Опис</th>
+                <th>Замовлень</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var tour in tours)
+            {
+                <tr>
+                    <td>@tour.Id</td>
+                    <td class="text-nowrap">@tour.Name</td>
+                    <td class="text-nowrap">@tour.Price.ToString("N2")</td>
+                    <td>@tour.DurationDays</td>
+                    <td class="small">@tour.Description</td>
+                    <td>@tour.Orders.Count</td>
+                    <td class="text-end text-nowrap">
+                        @if (deletingId == tour.Id)
+                        {
+                            <span class="me-2">
+                                @(tour.Orders.Count > 0 ? $"Видалити разом із замовленнями ({tour.Orders.Count})?" : "Видалити?")
+                            </span>
+                            <button class="btn btn-sm btn-danger" @onclick="() => DeleteAsync(tour.Id)">Так</button>
+                            <button class="btn btn-sm btn-secondary" @onclick="() => deletingId = null">Ні</button>
+                        }
+                        else
+                        {
+                            <a class="btn btn-sm btn-outline-primary" href="tours/edit/@tour.Id">Редагувати</a>
+                            <button class="btn btn-sm btn-outline-danger" @onclick="() => deletingId = tour.Id">Видалити</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Tour>? tours;
+    private int? deletingId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadAsync();
+    }
+
+    private async Task LoadAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        tours = await db.Tours
+            .Include(t => t.Orders)
+            .OrderBy(t => t.Id)
+            .AsNoTracking()
+            .ToListAsync();
+    }
+
+    private async Task DeleteAsync(int id)
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        var tour = await db.Tours
+            .Include(t => t.Orders)
+            .FirstOrDefaultAsync(t => t.Id == id);
+        if (tour != null)
+        {
+            db.Tours.Remove(tour);
+            await db.SaveChangesAsync();
+        }
+
+        deletingId = null;
+        await LoadAsync();
+    }
+}

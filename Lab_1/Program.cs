@@ -1,4 +1,5 @@
 using System.Globalization;
+using Lab_1.Components;
 using Microsoft.EntityFrameworkCore;
 
 CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
@@ -6,18 +7,16 @@ CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
-builder.Services.AddControllers();
-builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<TravelAgencyContext>(options =>
+builder.Services.AddRazorComponents()
+    .AddInteractiveServerComponents();
+builder.Services.AddDbContextFactory<TravelAgencyContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("TravelAgency")));
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
-
-app.MapRazorPages();
-app.MapControllers();
+app.UseAntiforgery();
+app.MapStaticAssets();
+app.MapRazorComponents<App>()
+    .AddInteractiveServerRenderMode();
 
 app.Run();

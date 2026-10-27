@@ -1,0 +1,100 @@
+@page "/tours/create"
+@page "/tours/edit/{Id:int}"
+@inject IDbContextFactory<TravelAgencyContext> DbFactory
+@inject NavigationManager Navigation
+
+<PageTitle>@Title — Туристична фірма</PageTitle>
+
+<h1 class="mb-3">@Title</h1>
+
+@if (!loaded)
+{
+    <p>Завантаження...</p>
+}
+else if (tour == null)
+{
+    <div class="alert alert-warning">Тур не знайдено.</div>
+    <a class="btn btn-secondary" href="tours">Назад</a>
+}
+else
+{
+    <EditForm Model="tour" OnValidSubmit="SaveAsync">
+        <DataAnnotationsValidator />
+
+        @if (error != null)
+        {
+            <div class="alert alert-danger">@error</div>
+        }
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label">Назва</label>
+                <InputText @bind-Value="tour.Name" class="form-control" />
+                <ValidationMessage For="() => tour.Name" class="text-danger" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Ціна, грн</label>
+                <InputNumber @bind-Value="tour.Price" class="form-control" step="0.01" />
+                <ValidationMessage For="() => tour.Price" class="text-danger" />
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Тривалість, днів</label>
+                <InputNumber @bind-Value="tour.DurationDays" class="form-control" />
+                <ValidationMessage For="() => tour.DurationDays" class="text-danger" />
+            </div>
+            <div class="col-12">
+                <label class="form-label">Опис</label>
+                <InputTextArea @bind-Value="tour.Description" class="form-control" rows="3" />
+                <ValidationMessage For="() => tour.Description" class="text-danger" />
+            </div>
+        </div>
+
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Зберегти</button>
+            <a class="btn btn-secondary" href="tours">Скасувати</a>
+        </div>
+    </EditForm>
+}
+
+@code {
+    [Parameter]
+    public int? Id { get; set; }
+
+    private Tour? tour;
+    private bool loaded;
+    private string? error;
+
+    private string Title => Id == null ? "Новий тур" : "Редагування туру";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (Id == null)
+        {
+            tour = new Tour { DurationDays = 1 };
+        }
+        else
+        {
+            await using var db = await DbFactory.CreateDbContextAsync();
+            tour = await db.Tours.FindAsync(Id.Value);
+        }
+        loaded = true;
+    }
+
+    private async Task SaveAsync()
+    {
+        await using var db = await DbFactory.CreateDbContextAsync();
+        if (await db.Tours.AnyAsync(t => t.Name == tour!.Name && t.Id != tour.Id))
+        {
+            error = "Тур з такою назвою вже існує";
+            return;
+        }
+
+        if (Id == null)
+            db.Tours.Add(tour!);
+        else
+            db.Tours.Update(tour!);
+
+        await db.SaveChangesAsync();
+        Navigation.NavigateTo("tours");
+    }
+}
