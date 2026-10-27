@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+option csharp_namespace = "TravelAgency.Grpc";
+
+package travelagency;
+
+import "google/protobuf/empty.proto";
+
+message IdRequest {
+  int32 id = 1;
+}
+
+message ClientMessage {
+  int32 id = 1;
+  string last_name = 2;
+  string first_name = 3;
+  optional string middle_name = 4;
+  string phone = 5;
+  string city = 6;
+  string street = 7;
+  string building = 8;
+  optional string apartment = 9;
+  int32 orders_count = 10;
+}
+
+message ClientList {
+  repeated ClientMessage clients = 1;
+}
+
+message TourMessage {
+  int32 id = 1;
+  string name = 2;
+  string description = 3;
+  double price = 4;
+  int32 duration_days = 5;
+  int32 orders_count = 6;
+}
+
+message TourList {
+  repeated TourMessage tours = 1;
+}
+
+message OrderMessage {
+  int32 id = 1;
+  int32 client_id = 2;
+  string client_name = 3;
+  int32 tour_id = 4;
+  string tour_name = 5;
+  string order_date = 6;
+  string trip_date = 7;
+  int32 duration_days = 8;
+  int32 quantity = 9;
+  double price = 10;
+  double discount_percent = 11;
+  double total = 12;
+}
+
+message OrderList {
+  repeated OrderMessage orders = 1;
+}
+
+service ClientService {
+  rpc GetAll (google.protobuf.Empty) returns (ClientList);
+  rpc Get (IdRequest) returns (ClientMessage);
+  rpc Create (ClientMessage) returns (ClientMessage);
+  rpc Update (ClientMessage) returns (ClientMessage);
+  rpc Delete (IdRequest) returns (google.protobuf.Empty);
+}
+
+service TourService {
+  rpc GetAll (google.protobuf.Empty) returns (TourList);
+  rpc Get (IdRequest) returns (TourMessage);
+  rpc Create (TourMessage) returns (TourMessage);
+  rpc Update (TourMessage) returns (TourMessage);
+  rpc Delete (IdRequest) returns (google.protobuf.Empty);
+}
+
+service OrderService {
+  rpc GetAll (google.protobuf.Empty) returns (OrderList);
+  rpc Get (IdRequest) returns (OrderMessage);
+  rpc Create (OrderMessage) returns (OrderMessage);
+  rpc Update (OrderMessage) returns (OrderMessage);
+  rpc Delete (IdRequest) returns (google.protobuf.Empty);
+}
