@@ -8,8 +8,9 @@
 - **lab4** — ASP.NET Core Razor Pages + Web API (на основі lab3)
 - **lab5** — Blazor (на основі lab4)
 - **lab6** — gRPC-сервіс + консольний клієнт (на основі lab5)
+- **lab7** — .NET MAUI, застосунок для Windows (на основі lab6)
 
-**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API, Blazor, gRPC), Swagger.
+**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API, Blazor, gRPC), .NET MAUI, Swagger.
 
 ## Лабораторна 2
 
@@ -69,6 +70,21 @@ Blazor з п'ятої лаби тут не використовується (в�
 - увімкнув HTTP/2, бо gRPC працює тільки через нього;
 - створив консольний клієнт `GrpcClient` з меню, який через gRPC показує, додає, редагує та видаляє клієнтів, тури й замовлення; код для викликів генерується з того самого `.proto`.
 
+## Лабораторна 7
+
+У цій лабі я зробив той самий CRUD як настільний застосунок на .NET MAUI (для Windows).
+Це вже не сайт і не сервіс, а програма з власним вікном, яка працює з базою напряму через EF Core.
+gRPC-сервер і консольний клієнт з шостої лаби тут не використовуються (вони залишились у гілці `lab6`).
+
+Що я зробив:
+- перетворив проєкт на MAUI-застосунок (`UseMaui`, ціль `net10.0-windows`); налаштування — у `MauiProgram.cs`;
+- зробив навігацію вкладками «Клієнти», «Тури», «Замовлення» (`AppShell.xaml`, `Shell` + `TabBar`);
+- створив сторінки (папка `Pages`): кожна складається з розмітки `.xaml` і коду `.xaml.cs`;
+- для кожної сутності зробив список (`ClientsPage`, `ToursPage`, `OrdersPage`) на `CollectionView` з кнопками «Редагувати» / «Видалити» і форму для створення та редагування (`ClientEditPage`, `TourEditPage`, `OrderEditPage`);
+- у формі замовлення клієнт і тур вибираються зі списків (`Picker`), а дати — у календарі (`DatePicker`);
+- перевіряю введені дані за атрибутами моделей і показую помилки під формою; видалення підтверджується діалогом;
+- для роботи з базою використав `IDbContextFactory`, як і в п'ятій лабі.
+
 ## Запуск
 
 Потрібен PostgreSQL (користувач `postgres` / пароль `admin`) і база `travel_agency`,
@@ -85,4 +101,10 @@ dotnet run --project Lab_1
 
 ```bash
 dotnet run --project GrpcClient
+```
+
+- lab7 — відкривається вікно застосунку «Туристична фірма». Для збірки потрібен workload MAUI для Windows:
+
+```bash
+dotnet workload install maui-windows
 ```
