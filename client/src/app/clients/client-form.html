@@ -1,0 +1,55 @@
+<h1 class="mb-3">{{ title }}</h1>
+
+@if (errors()[general]; as messages) {
+  <div class="alert alert-danger">{{ messages.join(' ') }}</div>
+}
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="row g-3">
+    <div class="col-md-4">
+      <label class="form-label" for="lastName">Прізвище</label>
+      <input id="lastName" class="form-control" formControlName="lastName" [class.is-invalid]="errors()['lastName']" />
+      <div class="invalid-feedback">{{ errors()['lastName']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="firstName">Ім'я</label>
+      <input id="firstName" class="form-control" formControlName="firstName" [class.is-invalid]="errors()['firstName']" />
+      <div class="invalid-feedback">{{ errors()['firstName']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="middleName">По батькові</label>
+      <input id="middleName" class="form-control" formControlName="middleName" [class.is-invalid]="errors()['middleName']" />
+      <div class="invalid-feedback">{{ errors()['middleName']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="phone">Телефон</label>
+      <input id="phone" class="form-control" formControlName="phone" placeholder="+380..." [class.is-invalid]="errors()['phone']" />
+      <div class="invalid-feedback">{{ errors()['phone']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="city">Місто</label>
+      <input id="city" class="form-control" formControlName="city" [class.is-invalid]="errors()['city']" />
+      <div class="invalid-feedback">{{ errors()['city']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label" for="street">Вулиця</label>
+      <input id="street" class="form-control" formControlName="street" [class.is-invalid]="errors()['street']" />
+      <div class="invalid-feedback">{{ errors()['street']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label" for="building">Будинок</label>
+      <input id="building" class="form-control" formControlName="building" [class.is-invalid]="errors()['building']" />
+      <div class="invalid-feedback">{{ errors()['building']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-2">
+      <label class="form-label" for="apartment">Квартира</label>
+      <input id="apartment" class="form-control" formControlName="apartment" [class.is-invalid]="errors()['apartment']" />
+      <div class="invalid-feedback">{{ errors()['apartment']?.join(' ') }}</div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button type="submit" class="btn btn-success me-2">Зберегти</button>
+    <a class="btn btn-secondary" routerLink="/clients">Скасувати</a>
+  </div>
+</form>

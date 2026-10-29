@@ -1,0 +1,50 @@
+<div class="d-flex justify-content-between align-items-center mb-3">
+  <h1>Клієнти</h1>
+  <a class="btn btn-success" routerLink="/clients/new">Додати клієнта</a>
+</div>
+
+@if (error()) {
+  <div class="alert alert-danger">{{ error() }}</div>
+}
+
+@if (clients(); as list) {
+  <table class="table table-striped align-middle">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>ПІБ</th>
+        <th>Телефон</th>
+        <th>Адреса</th>
+        <th>Замовлень</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      @for (client of list; track client.id) {
+        <tr>
+          <td>{{ client.id }}</td>
+          <td>{{ fullName(client) }}</td>
+          <td>{{ client.phone }}</td>
+          <td>{{ address(client) }}</td>
+          <td>{{ client.ordersCount }}</td>
+          <td class="text-end text-nowrap">
+            @if (deletingId() === client.id) {
+              <span class="me-2">
+                {{ client.ordersCount > 0 ? 'Видалити разом із замовленнями (' + client.ordersCount + ')?' : 'Видалити?' }}
+              </span>
+              <button class="btn btn-sm btn-danger me-1" (click)="remove(client.id)">Так</button>
+              <button class="btn btn-sm btn-secondary" (click)="deletingId.set(null)">Ні</button>
+            } @else {
+              <a class="btn btn-sm btn-outline-primary me-1" [routerLink]="['/clients', client.id, 'edit']">Редагувати</a>
+              <button class="btn btn-sm btn-outline-danger" (click)="deletingId.set(client.id)">Видалити</button>
+            }
+          </td>
+        </tr>
+      } @empty {
+        <tr><td colspan="6" class="text-muted">Клієнтів немає</td></tr>
+      }
+    </tbody>
+  </table>
+} @else if (!error()) {
+  <p>Завантаження...</p>
+}

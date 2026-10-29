@@ -1,5 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 
 namespace Lab_1.Models;
 
@@ -25,5 +27,6 @@ public class Tour
     [Range(1, 365, ErrorMessage = "Від 1 до 365 днів")]
     public int DurationDays { get; set; }
 
+    [ValidateNever, JsonIgnore]
     public List<Order> Orders { get; set; } = new();
 }

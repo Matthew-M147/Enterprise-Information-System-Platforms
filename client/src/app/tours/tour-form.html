@@ -1,0 +1,35 @@
+<h1 class="mb-3">{{ title }}</h1>
+
+@if (errors()[general]; as messages) {
+  <div class="alert alert-danger">{{ messages.join(' ') }}</div>
+}
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label" for="name">Назва</label>
+      <input id="name" class="form-control" formControlName="name" [class.is-invalid]="errors()['name']" />
+      <div class="invalid-feedback">{{ errors()['name']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="price">Ціна, грн</label>
+      <input id="price" type="number" step="0.01" class="form-control" formControlName="price" [class.is-invalid]="errors()['price']" />
+      <div class="invalid-feedback">{{ errors()['price']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="durationDays">Тривалість, днів</label>
+      <input id="durationDays" type="number" class="form-control" formControlName="durationDays" [class.is-invalid]="errors()['durationDays']" />
+      <div class="invalid-feedback">{{ errors()['durationDays']?.join(' ') }}</div>
+    </div>
+    <div class="col-12">
+      <label class="form-label" for="description">Опис</label>
+      <textarea id="description" rows="3" class="form-control" formControlName="description" [class.is-invalid]="errors()['description']"></textarea>
+      <div class="invalid-feedback">{{ errors()['description']?.join(' ') }}</div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button type="submit" class="btn btn-success me-2">Зберегти</button>
+    <a class="btn btn-secondary" routerLink="/tours">Скасувати</a>
+  </div>
+</form>

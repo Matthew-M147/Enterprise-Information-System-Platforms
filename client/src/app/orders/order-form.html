@@ -1,0 +1,55 @@
+<h1 class="mb-3">{{ title }}</h1>
+
+@if (errors()[general]; as messages) {
+  <div class="alert alert-danger">{{ messages.join(' ') }}</div>
+}
+
+<form [formGroup]="form" (ngSubmit)="save()">
+  <div class="row g-3">
+    <div class="col-md-6">
+      <label class="form-label" for="clientId">Клієнт</label>
+      <select id="clientId" class="form-select" formControlName="clientId" [class.is-invalid]="errors()['clientId']">
+        <option [ngValue]="0">— оберіть клієнта —</option>
+        @for (client of clients(); track client.id) {
+          <option [ngValue]="client.id">{{ fullName(client) }}</option>
+        }
+      </select>
+      <div class="invalid-feedback">{{ errors()['clientId']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-6">
+      <label class="form-label" for="tourId">Тур</label>
+      <select id="tourId" class="form-select" formControlName="tourId" [class.is-invalid]="errors()['tourId']">
+        <option [ngValue]="0">— оберіть тур —</option>
+        @for (tour of tours(); track tour.id) {
+          <option [ngValue]="tour.id">{{ tour.name }}</option>
+        }
+      </select>
+      <div class="invalid-feedback">{{ errors()['tourId']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="orderDate">Дата замовлення</label>
+      <input id="orderDate" type="date" class="form-control" formControlName="orderDate" [class.is-invalid]="errors()['orderDate']" />
+      <div class="invalid-feedback">{{ errors()['orderDate']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="tripDate">Дата поїздки</label>
+      <input id="tripDate" type="date" class="form-control" formControlName="tripDate" [class.is-invalid]="errors()['tripDate']" />
+      <div class="invalid-feedback">{{ errors()['tripDate']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="quantity">Кількість</label>
+      <input id="quantity" type="number" class="form-control" formControlName="quantity" [class.is-invalid]="errors()['quantity']" />
+      <div class="invalid-feedback">{{ errors()['quantity']?.join(' ') }}</div>
+    </div>
+    <div class="col-md-3">
+      <label class="form-label" for="discountPercent">Знижка, %</label>
+      <input id="discountPercent" type="number" step="0.01" class="form-control" formControlName="discountPercent" [class.is-invalid]="errors()['discountPercent']" />
+      <div class="invalid-feedback">{{ errors()['discountPercent']?.join(' ') }}</div>
+    </div>
+  </div>
+
+  <div class="mt-4">
+    <button type="submit" class="btn btn-success me-2">Зберегти</button>
+    <a class="btn btn-secondary" routerLink="/orders">Скасувати</a>
+  </div>
+</form>
