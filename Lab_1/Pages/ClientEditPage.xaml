@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    x:Class="Lab_1.Pages.ClientEditPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="8" MaximumWidthRequest="600" HorizontalOptions="Start">
+            <Label x:Name="ErrorLabel" TextColor="#DC3545" IsVisible="False" />
+
+            <Label Text="Прізвище" />
+            <Entry x:Name="LastNameEntry" />
+            <Label Text="Ім'я" />
+            <Entry x:Name="FirstNameEntry" />
+            <Label Text="По батькові" />
+            <Entry x:Name="MiddleNameEntry" />
+            <Label Text="Телефон" />
+            <Entry x:Name="PhoneEntry" Placeholder="+380..." Keyboard="Telephone" />
+            <Label Text="Місто" />
+            <Entry x:Name="CityEntry" />
+            <Label Text="Вулиця" />
+            <Entry x:Name="StreetEntry" />
+            <Label Text="Будинок" />
+            <Entry x:Name="BuildingEntry" />
+            <Label Text="Квартира" />
+            <Entry x:Name="ApartmentEntry" />
+
+            <HorizontalStackLayout Spacing="10" Margin="0,12,0,0">
+                <Button Text="Зберегти" Clicked="OnSaveClicked" />
+                <Button Text="Скасувати" Clicked="OnCancelClicked" BackgroundColor="Gray" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

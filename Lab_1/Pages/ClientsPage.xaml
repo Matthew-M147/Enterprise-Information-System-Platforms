@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Lab_1.Models"
+    x:Class="Lab_1.Pages.ClientsPage"
+    Title="Клієнти">
+
+    <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="12">
+        <Button Text="Додати клієнта" Clicked="OnAddClicked" HorizontalOptions="Start" />
+
+        <CollectionView x:Name="ClientsView" Grid.Row="1">
+            <CollectionView.EmptyView>
+                <Label Text="Клієнтів немає" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Client">
+                    <Border Padding="12" Margin="0,0,0,8" Stroke="LightGray" StrokeShape="RoundRectangle 8">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="{Binding FullName}" FontAttributes="Bold" FontSize="16" />
+                                <Label Text="{Binding Phone}" />
+                                <Label Text="{Binding Address}" FontSize="13" TextColor="Gray" />
+                                <Label Text="{Binding Orders.Count, StringFormat='Замовлень: {0}'}" FontSize="13" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="Редагувати" VerticalOptions="Center"
+                                    Clicked="OnEditClicked" CommandParameter="{Binding .}" />
+                            <Button Grid.Column="2" Text="Видалити" VerticalOptions="Center" BackgroundColor="#DC3545"
+                                    Clicked="OnDeleteClicked" CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>

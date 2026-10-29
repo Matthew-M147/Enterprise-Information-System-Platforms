@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="Lab_1.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:pages="clr-namespace:Lab_1.Pages"
+    Title="Туристична фірма">
+
+    <TabBar>
+        <ShellContent Title="Клієнти" ContentTemplate="{DataTemplate pages:ClientsPage}" Route="clients" />
+        <ShellContent Title="Тури" ContentTemplate="{DataTemplate pages:ToursPage}" Route="tours" />
+        <ShellContent Title="Замовлення" ContentTemplate="{DataTemplate pages:OrdersPage}" Route="orders" />
+    </TabBar>
+
+</Shell>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:Lab_1.Models"
+    x:Class="Lab_1.Pages.OrdersPage"
+    Title="Замовлення">
+
+    <Grid RowDefinitions="Auto,*" Padding="20" RowSpacing="12">
+        <Button Text="Додати замовлення" Clicked="OnAddClicked" HorizontalOptions="Start" />
+
+        <CollectionView x:Name="OrdersView" Grid.Row="1">
+            <CollectionView.EmptyView>
+                <Label Text="Замовлень немає" />
+            </CollectionView.EmptyView>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:Order">
+                    <Border Padding="12" Margin="0,0,0,8" Stroke="LightGray" StrokeShape="RoundRectangle 8">
+                        <Grid ColumnDefinitions="*,Auto,Auto" ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="2">
+                                <Label FontAttributes="Bold" FontSize="16">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding Id, StringFormat='№{0}'}" />
+                                            <Span Text=" " />
+                                            <Span Text="{Binding Client.LastName}" />
+                                            <Span Text=" " />
+                                            <Span Text="{Binding Client.FirstName}" />
+                                            <Span Text="{Binding Tour.Name, StringFormat=' — {0}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label>
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding TripDate, StringFormat='Поїздка: {0:dd.MM.yyyy}'}" />
+                                            <Span Text="{Binding Tour.DurationDays, StringFormat=', {0} дн.'}" />
+                                            <Span Text="{Binding Quantity, StringFormat=', кількість: {0}'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label FontSize="13" TextColor="Gray">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="{Binding Tour.Price, StringFormat='Ціна: {0:N2} грн'}" />
+                                            <Span Text="{Binding DiscountPercent, StringFormat=', знижка: {0:0.##}%'}" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                                <Label Text="{Binding Total, StringFormat='Сума: {0:N2} грн'}" FontAttributes="Bold" />
+                            </VerticalStackLayout>
+                            <Button Grid.Column="1" Text="Редагувати" VerticalOptions="Center"
+                                    Clicked="OnEditClicked" CommandParameter="{Binding .}" />
+                            <Button Grid.Column="2" Text="Видалити" VerticalOptions="Center" BackgroundColor="#DC3545"
+                                    Clicked="OnDeleteClicked" CommandParameter="{Binding .}" />
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+
+</ContentPage>

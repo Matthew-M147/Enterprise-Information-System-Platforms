@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace Lab_1.Models;
+
 [Table("clients")]
 public class Client
 {
@@ -41,7 +43,7 @@ public class Client
 
     public List<Order> Orders { get; set; } = new();
 
-    public string FullName => $"{LastName} {FirstName} {MiddleName}";
+    public string FullName => $"{LastName} {FirstName} {MiddleName}".Trim();
 
     public string Address => $"{City}, {Street}, {Building}" + (!string.IsNullOrWhiteSpace(Apartment) ?$", кв. {Apartment}" : "");
 }

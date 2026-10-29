@@ -1,4 +1,7 @@
+using Lab_1.Models;
 using Microsoft.EntityFrameworkCore;
+
+namespace Lab_1.Data;
 
 public class TravelAgencyContext : DbContext
 {

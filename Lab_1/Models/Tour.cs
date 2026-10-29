@@ -1,6 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+namespace Lab_1.Models;
+
 [Table("tours")]
 public class Tour
 {
