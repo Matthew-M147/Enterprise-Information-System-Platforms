@@ -9,8 +9,9 @@
 - **lab5** — Blazor (на основі lab4)
 - **lab6** — gRPC-сервіс + консольний клієнт (на основі lab5)
 - **lab7** — .NET MAUI, застосунок для Windows (на основі lab6)
+- **lab8** — ASP.NET Core Web API + інтерфейс на Angular (TypeScript) (на основі lab7)
 
-**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API, Blazor, gRPC), .NET MAUI, Swagger.
+**Стек:** C# (.NET 10), PostgreSQL 16, Npgsql, EF Core, ASP.NET Core (MVC, Razor Pages, Web API, Blazor, gRPC), .NET MAUI, Swagger, TypeScript, Angular 20.
 
 ## Лабораторна 2
 
@@ -85,6 +86,21 @@ gRPC-сервер і консольний клієнт з шостої лаби 
 - перевіряю введені дані за атрибутами моделей і показую помилки під формою; видалення підтверджується діалогом;
 - для роботи з базою використав `IDbContextFactory`, як і в п'ятій лабі.
 
+## Лабораторна 8
+
+У цій лабі я розділив застосунок на дві частини: бекенд на ASP.NET Core Web API і фронтенд на Angular (TypeScript).
+Фронтенд працює в браузері й отримує та змінює дані тільки через HTTP-запити до API.
+MAUI-застосунок із сьомої лаби тут не використовується (він залишився в гілці `lab7`).
+
+Що я зробив:
+- повернув у `Lab_1` Web API: контролери `api/clients`, `api/tours`, `api/orders` з запитами `GET`, `POST`, `PUT`, `DELETE` і DTO у відповідях (папки `Controllers`, `Dtos`); база — через EF Core;
+- створив Angular-застосунок у папці `client`:
+  - `models` — TypeScript-інтерфейси `Client`, `Tour`, `Order`, що відповідають DTO з API;
+  - `services` — базовий клас `CrudService<T>` на `HttpClient` і сервіси `ClientsService`, `ToursService`, `OrdersService`;
+  - компоненти списку й форми для кожної сутності (`client-list`, `client-form` тощо) з маршрутами `/clients`, `/clients/new`, `/clients/:id/edit`;
+- помилки валідації з API показуються під відповідними полями форми, а видалення підтверджується прямо в рядку таблиці;
+- під час розробки `ng serve` перенаправляє запити `/api` на Web API (`proxy.conf.json`), а `ng build` збирає фронтенд у `Lab_1/wwwroot`, щоб його міг роздавати сам API.
+
 ## Запуск
 
 Потрібен PostgreSQL (користувач `postgres` / пароль `admin`) і база `travel_agency`,
@@ -108,3 +124,13 @@ dotnet run --project GrpcClient
 ```bash
 dotnet workload install maui-windows
 ```
+
+- lab8 — запускається Web API на http://localhost:5080; потрібен Node.js. В іншому терміналі запустіть Angular і відкрийте http://localhost:4200:
+
+```bash
+cd client
+npm install
+npm start
+```
+
+Або зберіть фронтенд один раз (`npm run build` у папці `client`) — тоді після `dotnet run --project Lab_1` сайт буде доступний на http://localhost:5080.
